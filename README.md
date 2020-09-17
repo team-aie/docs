@@ -1,37 +1,25 @@
-## Welcome to GitHub Pages
+## Welcome to aie
 
-You can use the [editor on GitHub](https://github.com/team-aie/docs/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+`aie` is a tool to help voicebank creators record voice samples for their favorite voice synthesizer.
+Simply create a project, select a recording list (reclist) and get started!
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Downloads
 
-### Markdown
+Navigate to the releases page: https://github.com/team-aie/app/releases/latest, then pick the right installer/binary:
+- `Windows`: Download `aie-setup-{version}.exe`.
+- `macOS`: Download `aie-{version}.dmg`.
+- `Linux`: Download `aie.AppImage`.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+To install:
+- `Windows`: Double click the installer and follow the instructions.
+- `macOS`: Double click the `dmg` file, and drag `aie` into the `Applications` folder.
+- `Linux`:
+    - Simplest way: run `chmod +x aie.AppImage` and run `./aie.AppImage`.
+    - Better way: Use [`AppImageLauncher`](https://github.com/TheAssassin/AppImageLauncher)
+    or [`appimaged`](https://github.com/AppImage/appimaged).
 
-```markdown
-Syntax highlighted code block
+### Development
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/team-aie/docs/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Welcome aboard! Please follow the [setup instructions](/development-setup.md) to set up your environment.
+If you run into any issues during development, take a look at the [troubleshooting page](/development-troubleshooting.md).
+Us the [resources](/resources.md) page for reference on background information and library documentations.
