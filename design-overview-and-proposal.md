@@ -30,74 +30,74 @@ being transparent). The color is the same as the exterior lines.
 ### Welcome Page
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-welcome-page-light.png)
+mode](assets/ui-design-welcome-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-welcome-page-dark.png)
+mode](assets/ui-design-welcome-page-dark.png)
 
 ### Create/select project
 
 ![The mock of the create project page in light
-mode](/assets/ui-design-create-select-project-page-light.png)
+mode](assets/ui-design-create-select-project-page-light.png)
 
 ![The mock of the create project page in dark
-mode](/assets/ui-design-create-select-project-page-dark.png)
+mode](assets/ui-design-create-select-project-page-dark.png)
 
 ### Scale configuration
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-scale-configuration-page-light.png)
+mode](assets/ui-design-scale-configuration-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-scale-configuration-page-dark.png)
+mode](assets/ui-design-scale-configuration-page-dark.png)
 
 ### Recording list preview (if “Show Detail” is clicked, will pull up from the bottom)
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-recording-list-preview-page-light.png)
+mode](assets/ui-design-recording-list-preview-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-recording-list-preview-page-dark.png)
+mode](assets/ui-design-recording-list-preview-page-dark.png)
 
 ### Oto.ini preview (if “Switch To oto.ini” is clicked, will slide in from the right)
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-otoini-preview-page-light.png)
+mode](assets/ui-design-otoini-preview-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-otoini-preview-page-dark.png)
+mode](assets/ui-design-otoini-preview-page-dark.png)
 
 ### Voice.dvcfg preview (if “Switch To voice.dvcfg” is clicked, will slide in from the right)
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-voicedvcfg-preview-page-light.png)
+mode](assets/ui-design-voicedvcfg-preview-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-voicedvcfg-preview-page-dark.png)
+mode](assets/ui-design-voicedvcfg-preview-page-dark.png)
 
 ### Built-in recording list usage agreement (ToC) (If exists, if new project)
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-usage-agreement-page-light.png)
+mode](assets/ui-design-usage-agreement-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-usage-agreement-page-dark.png)
+mode](assets/ui-design-usage-agreement-page-dark.png)
 
 ### Recording screen (correction: should display a gear button in the top right corner in this screen, not the scale configuration screen)
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-recording-page-light.png)
+mode](assets/ui-design-recording-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-recording-page-dark.png)
+mode](assets/ui-design-recording-page-dark.png)
 
 ### Audio settings (if click on the gear button, or display when entering the project after the user agrees to the ToC)
 
 ![The mock of the welcome page in light
-mode](/assets/ui-design-audio-settings-page-light.png)
+mode](assets/ui-design-audio-settings-page-light.png)
 
 ![The mock of the welcome page in dark
-mode](/assets/ui-design-audio-settings-page-dark.png)
+mode](assets/ui-design-audio-settings-page-dark.png)
 
 # Detailed design
 
