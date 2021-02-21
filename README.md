@@ -36,6 +36,11 @@ look at the [troubleshooting page](/development-troubleshooting.md). Us the
 [resources](/resources.md) page for reference on background information and
 library documentations.
 
+#### Design document
+
+There is a [Design Overview and Proposal](/design-overview-and-proposal.md)
+document that describes the current software design and future work directions.
+
 #### Auto-formatting Markdown files
 
 In all `aie` repos, use the VSCode settings that came with the repo to configure
