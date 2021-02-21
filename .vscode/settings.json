@@ -12,11 +12,4 @@
   "files.insertFinalNewline": true,
   "files.autoSave": "afterDelay",
   "rewrap.wrappingColumn": 80,
-  "[markdown]": {
-    "editor.quickSuggestions": {
-      "other": true,
-      "comments": true,
-      "strings": true,
-    },
-  }
 }
