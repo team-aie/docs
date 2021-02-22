@@ -117,6 +117,7 @@ double-clicking the desktop icon):
 
 1. No second instances are launched
 1. If the first instance is minimized, this will also bring up that instance to
+
    the front
 
 The first point is implemented with the following:
@@ -235,6 +236,7 @@ locale-specific CSS file.
 Currently, the application lacks provisions for accessibility in the custom
 components. To satisfy the requirement that the entire application can be used
 with only a keyboard, there is at least an action item of adding a `tabindex=0`
+
 attribute to each of these components. However, as clearer requirements
 regarding accessibility appear, there might be a need for further enhancement.
 It is suggested that the team implement a library of custom components, such as
@@ -257,6 +259,7 @@ users, when they close the window and launch the new one, the application must
 not forget where it was at - similar to the experience of minimizing and then
 bringing to the front on Windows. Current solution is to record state variables
 to local storage using `useLocalStorage` from `react-use` rather than `useState`
+
 directly. However, discretion is needed when the state variable is concerned
 with audio input devices, which may or may not stay the same when the app wakes
 up.
@@ -264,19 +267,25 @@ up.
 ### Design Plan
 
 ### Task 1: Add Settings button
+
 Key tasks:
+
 * Enable users to change setting in recording page
 
 Related existing code:
-  * `src/renderer/components/configure-recording-set-page/index.tsx`
+
+  + `src/renderer/components/configure-recording-set-page/index.tsx`
 
 Design detail:
+
 * Add a setting button in the configure-recording-set-page, implemented by modifying page index in state
 * The settings-page that is entered by clicking the setting button will be different from the default settings-page that is accessed by clicking the Start button on the configure-recording-set-page, as it will not contain the Confirm button that is used to reach the next page, the recording-page.
 * The settings-page is entered by changing the page index, and return to the configure-recording-set-page by the Back button or the Ok button.
 
 ### Task 2: File Handling
+
 Key tasks:
+
 * Detect missing file while reading the file
 * When file is missing, alert whether to retry
 * Prevent user from deleting a file that is in use
@@ -284,61 +293,68 @@ Key tasks:
 * Detect existing project by detecting json file
 
 Method used:
+
 * [chokidar](https://chromium.googlesource.com/infra/third_party/npm_modules/+/e7396f39cd50de4419362fc2bc48360cb85ce555/node_modules/karma/node_modules/chokidar/README.md)
 
 Related existing code:
+
 * `src/renderer/components/configure-recording-set-page/configure-recording-set.tsx`
 * `src/renderer/utils/FileMonitor.tsx`
 
 Design detail:
+
 * Chokidar, a better replacement of fs.watch and fs.watchFile, can be used to monitor the file status such as:
-  * Delete file/folder - using listening for the 'unlink' / 'unlinkdir' event
-  * Change file/folder - using listening for the 'change' / 'changedir' event
-  * Add file/folder - using listening for the 'add' / 'adddir' event
+  + Delete file/folder - using listening for the 'unlink' / 'unlinkdir' event
+  + Change file/folder - using listening for the 'change' / 'changedir' event
+  + Add file/folder - using listening for the 'add' / 'adddir' event
 * In `src/renderer/utils/FileMonitor.tsx` (located in utils folder), a list of functions are used to check the file status:
-  * `watch(events: Event[])`
-  * `ignoreFiles(eventsToIgnore: Event[], ignoredFilepath: Array<string>)`
-  * `unwatch(events: Event[])`
+  + `watch(events: Event[])`
+  + `ignoreFiles(eventsToIgnore: Event[], ignoredFilepath: Array<string>)`
+  + `unwatch(events: Event[])`
 * In order to ensure the intended operation from the app is not alerted
-  * The file that the app is going to make changes to will be temporarily ignored in the watcher by adding that path to the ignored option under chokidar.watch function using ignoreFiles
+  + The file that the app is going to make changes to will be temporarily ignored in the watcher by adding that path to the ignored option under chokidar.watch function using ignoreFiles
 * In order to watch the file status of the whole project
-  * A new function called watch will be constructed and take the file path of the opening project as the parameter. It directly connected to all the project page for alerting any changes that happened
-    * It will take an array of filePath that includes all the files related to the aie software and watches all the files
-  * Key Issues
-    * Using useState to sync the updated ignored option
+  + A new function called watch will be constructed and take the file path of the opening project as the parameter. It directly connected to all the project page for alerting any changes that happened
+    - It will take an array of filePath that includes all the files related to the aie software and watches all the files
+  + Key Issues
+    - Using useState to sync the updated ignored option
 * Reference:
-  * https://chromium.googlesource.com/infra/third_party/npm_modules/+/e7396f39cd50de4419362fc2bc48360cb85ce555/node_modules/karma/node_modules/chokidar/README.md
-  * https://github.com/paulmillr/chokidar
+  + https://chromium.googlesource.com/infra/third_party/npm_modules/+/e7396f39cd50de4419362fc2bc48360cb85ce555/node_modules/karma/node_modules/chokidar/README.md
+  + https://github.com/paulmillr/chokidar
 
 ### Task 3: Project Status Resuming
+
 Key tasks:
+
 * Choose to resume previous progress while users open an in-progress project
 * Project file should record the state of recording
 * The open-project-page should have a button named 'Resume' which could allow the user to resume back to the previous working status.
 
 Method used:
+
 * Localstorage
 
 Related existing code:
+
 * `src/renderer/components/recording-page/index.tsx`
 * `src/renderer/components/open-project-page/index.tsx`
 
 Information stored in the localstorage
+
 * recording-page/Index.tsx - The index of the recording item that is recorded before program is closed
 * open-project-page/index.tsx - The path of the project that user is currently worked on
 
 Design detail:
+
 * Store the path of the open project as user switch from open-project-page to configure-recording-set-page
 * Store the chosen recording set as user switch from configure-recording-set-page to recording-page
 * Store the index of the current recording items as user records and replace it with the next one as the user records the new one.
 
 Reference:
+
 * https://medium.com/cameron-nokes/how-to-store-user-data-in-electron-3ba6bf66bc1e
 * https://www.geeksforgeeks.org/persisting-data-in-electronjs/
 * https://programmingwithmosh.com/react/localstorage-react/
-
-
-
 
 ## Web Animation
 
@@ -370,32 +386,35 @@ components more difficult. This needs to be broken down into smaller pieces.
 
 ## Audio Visualization
 
-Audio visualization is currently centralized in `src/renderer/components/recording-page/recording-visualization.tsx`.The application will show the user two types of audio visualizations based on the current state. The two types of visualizations include a waveform and spectrogram. When the application is in the 'recording' state, a live waveform and spectrogram will update based on the microphone's input. The component will acquire the microphone device based on the chosen input device selected on the settings page. When the application is not in a 'recording' state, the waveform and spectrogram will update based on the .wav file for the current recitem. If no .wav file exists, no visualizations will show. The application also utilizes the FileMonitor so if the user ever deletes or adds a .wav file for the recitem, the visualizations will update appropriately.
+Audio visualization is currently centralized in `src/renderer/components/recording-page/recording-visualization.tsx` . The application will show the user two types of audio visualizations based on the current state. The two types of visualizations include a waveform and spectrogram. When the application is in the 'recording' state, a live waveform and spectrogram will update based on the microphone's input. The component will acquire the microphone device based on the chosen input device selected on the settings page. When the application is not in a 'recording' state, the waveform and spectrogram will update based on the .wav file for the current recitem. If no .wav file exists, no visualizations will show. The application also utilizes the FileMonitor so if the user ever deletes or adds a .wav file for the recitem, the visualizations will update appropriately.
 
 The libraries used include the base [wavesurfer.js library](https://wavesurfer-js.org/), along with the [spectrogram](https://wavesurfer-js.org/plugins/spectrogram.html) and [microphone](https://wavesurfer-js.org/plugins/microphone.html) plugins.
 
  The details behind the current design are shown below.
 
 ### Design Plan for Rendering Live Visualizations
+
 Method Used:
-- waveform.js Microphone Plugin
+
+* waveform.js Microphone Plugin
 
 Related Existing Code:
-- Add in `types/` a `wavesurfer.microphone.d.ts` file
-  - Ensures that the plugin imports correctly (similar to `types/wavesurfer.spectrogram.d.ts`)
-  - Export a MicrophonePluginParams interface
-  - Based on top comment on https://wavesurfer-js.org/doc/file/src/plugin/microphone.js.html
-  - Export a MicrophonePlugin class with a static create function that takes in an input of type MicrophonePluginParams
+
+* Add in `types/` a `wavesurfer.microphone.d.ts` file
+  + Ensures that the plugin imports correctly (similar to `types/wavesurfer.spectrogram.d.ts`)
+  + Export a MicrophonePluginParams interface
+  + Based on top comment on https://wavesurfer-js.org/doc/file/src/plugin/microphone.js.html
+  + Export a MicrophonePlugin class with a static create function that takes in an input of type MicrophonePluginParams
     - Again, based on this source code https://wavesurfer-js.org/doc/file/src/plugin/microphone.js.html
-- In `recording-page/recording-visualization.tsx`:
-  - Add acquireAudioInputStream to the import statement from `../../utils`
-  - `import { useAudioInputOutputDevices } from '../settings-page/hooks';`
+* In `recording-page/recording-visualization.tsx`:
+  + Add acquireAudioInputStream to the import statement from `../../utils`
+  + `import { useAudioInputOutputDevices } from '../settings-page/hooks';`
     - This is the subscription to the audio devices, the current input device id is used to acquire the used audio input stream on the microphone plugin
-  - `const [, , audioInputDeviceId, , ,] = useAudioInputOutputDevices();`
+  + `const [, , audioInputDeviceId, , ,] = useAudioInputOutputDevices();`
     - Get the audio input device id, we don’t care about the other variables that useAudioInputOutputDevices returns
-  - `MicrophonePlugin.create({}),`
+  + `MicrophonePlugin.create({}),`
     - Add the microphone plugin to the existing wavesurfer instance’s plugin array
-  - In the useEffect on [filePath, prevState, state]
+  + In the useEffect on [filePath, prevState, state]
     - Add `audioInputDeviceId` to the dependencies to run the useEffect on
     - Add `waveSurfer.microphone.pause();` in the not recording if before you read from the .wav file to make sure that the live visualizations are stopped and the instance is ready for the static visualizations
     - Add an else if for when the application is in a recording state
@@ -403,32 +422,40 @@ Related Existing Code:
       - Else just call `waveSurfer.microphone.play();`
 
 Design Detail:
-- Use the waveform.js microphone plugin to do the live waveform.
-- Most of the edit would be in `renderer\components\recording-page\recording-visualization.tsx`
+
+* Use the waveform.js microphone plugin to do the live waveform.
+* Most of the edit would be in `renderer\components\recording-page\recording-visualization.tsx`
 
 ### Design Plan for Rendering Static Visualizations
+
 Method Used:
-- waveform.js
+
+* waveform.js
 
 Related Existing Code:
-- In `recording-page/recording-visualization.tsx`:
-  - Add a FileMonitor item and have it watch when files are added, unlinked, and changed to the project folder
-  - Subscribe to that filemonitor item’s `getSubject()` function
+
+* In `recording-page/recording-visualization.tsx`:
+  + Add a FileMonitor item and have it watch when files are added, unlinked, and changed to the project folder
+  + Subscribe to that filemonitor item’s `getSubject()` function
     - Limit the events to ones that deal with just the current recitem’s wav file
     - On unlink empty the visualizations
     - On add reload the visualizations with the new file
 
 Design Detail:
-- If the recording item has a related .wav file
-  - Show a waveform and spectrogram from the related .wav file
-- If the recording item does not has a related .wav file
-  - Show no spectrogram or waveform - would reuse the current code for this
+
+* If the recording item has a related .wav file
+  + Show a waveform and spectrogram from the related .wav file
+* If the recording item does not has a related .wav file
+  + Show no spectrogram or waveform - would reuse the current code for this
 
 ### Design Plan for AutoZoom on Visualizations
+
 Method Used:
-- waveform.js
+
+* waveform.js
 
 Related Existing Code:
 
 Design Detail:
-- Not going to do anything special, the automatic zooming on wavesurfer.js is sufficient to meet client needs
+
+* Not going to do anything special, the automatic zooming on wavesurfer.js is sufficient to meet client needs
