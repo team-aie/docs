@@ -261,6 +261,85 @@ directly. However, discretion is needed when the state variable is concerned
 with audio input devices, which may or may not stay the same when the app wakes
 up.
 
+### Design Plan
+
+### Task 1: Add Settings button
+Key tasks:
+* Enable users to change setting in recording page
+
+Related existing code:
+  * `src/renderer/components/configure-recording-set-page/index.tsx`
+
+Design detail:
+* Add a setting button in the configure-recording-set-page, implemented by modifying page index in state
+* The settings-page that is entered by clicking the setting button will be different from the default settings-page that is accessed by clicking the Start button on the configure-recording-set-page, as it will not contain the Confirm button that is used to reach the next page, the recording-page.
+* The settings-page is entered by changing the page index, and return to the configure-recording-set-page by the Back button or the Ok button.
+
+### Task 2: File Handling
+Key tasks:
+* Detect missing file while reading the file
+* When file is missing, alert whether to retry
+* Prevent user from deleting a file that is in use
+* Detect moved file
+* Detect existing project by detecting json file
+
+Method used:
+* [chokidar](https://chromium.googlesource.com/infra/third_party/npm_modules/+/e7396f39cd50de4419362fc2bc48360cb85ce555/node_modules/karma/node_modules/chokidar/README.md)
+
+Related existing code:
+* `src/renderer/components/configure-recording-set-page/configure-recording-set.tsx`
+* `src/renderer/utils/FileMonitor.tsx`
+
+Design detail:
+* Chokidar, a better replacement of fs.watch and fs.watchFile, can be used to monitor the file status such as:
+  * Delete file/folder - using listening for the 'unlink' / 'unlinkdir' event
+  * Change file/folder - using listening for the 'change' / 'changedir' event
+  * Add file/folder - using listening for the 'add' / 'adddir' event
+* In `src/renderer/utils/FileMonitor.tsx` (located in utils folder), a list of functions are used to check the file status:
+  * `watch(events: Event[])`
+  * `ignoreFiles(eventsToIgnore: Event[], ignoredFilepath: Array<string>)`
+  * `unwatch(events: Event[])`
+* In order to ensure the intended operation from the app is not alerted
+  * The file that the app is going to make changes to will be temporarily ignored in the watcher by adding that path to the ignored option under chokidar.watch function using ignoreFiles
+* In order to watch the file status of the whole project
+  * A new function called watch will be constructed and take the file path of the opening project as the parameter. It directly connected to all the project page for alerting any changes that happened
+    * It will take an array of filePath that includes all the files related to the aie software and watches all the files
+  * Key Issues
+    * Using useState to sync the updated ignored option
+* Reference:
+  * https://chromium.googlesource.com/infra/third_party/npm_modules/+/e7396f39cd50de4419362fc2bc48360cb85ce555/node_modules/karma/node_modules/chokidar/README.md
+  * https://github.com/paulmillr/chokidar
+
+### Task 3: Project Status Resuming
+Key tasks:
+* Choose to resume previous progress while users open an in-progress project
+* Project file should record the state of recording
+* The open-project-page should have a button named 'Resume' which could allow the user to resume back to the previous working status.
+
+Method used:
+* Localstorage
+
+Related existing code:
+* `src/renderer/components/recording-page/index.tsx`
+* `src/renderer/components/open-project-page/index.tsx`
+
+Information stored in the localstorage
+* recording-page/Index.tsx - The index of the recording item that is recorded before program is closed
+* open-project-page/index.tsx - The path of the project that user is currently worked on
+
+Design detail:
+* Store the path of the open project as user switch from open-project-page to configure-recording-set-page
+* Store the chosen recording set as user switch from configure-recording-set-page to recording-page
+* Store the index of the current recording items as user records and replace it with the next one as the user records the new one.
+
+Reference:
+* https://medium.com/cameron-nokes/how-to-store-user-data-in-electron-3ba6bf66bc1e
+* https://www.geeksforgeeks.org/persisting-data-in-electronjs/
+* https://programmingwithmosh.com/react/localstorage-react/
+
+
+
+
 ## Web Animation
 
 There are a few screen transitions that require animation. This poses particular
