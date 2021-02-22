@@ -17,6 +17,7 @@ team.
 | Date       | Status      |
 |------------|-------------|
 | 2020-10-13 | First draft |
+| 2021-02-16 | Update Audio Visualization Section |
 
 # UI design
 
@@ -290,28 +291,25 @@ components more difficult. This needs to be broken down into smaller pieces.
 
 ## Audio Visualization
 
-Currently, the visualization
-`src/renderer/components/recording-page/recording-visualization.tsx` is done
-after the recording is complete. This is inconsistent with the intended design
-(which is real-time). Also, due to the limitation of the library used
-([wavesurfer.js +
-Spectrogram](https://wavesurfer-js.org/example/spectrogram/index.html)), it is
-implemented as a routine check-then-update loop running in an interval, which is
-more costly in terms of performance.
+Audio visualization is currently centralized in `src/renderer/components/recording-page/recording-visualization.tsx`.The application will show the user two types of audio visualizations based on the current state. The two types of visualizations include a waveform and spectrogram. When the application is in the 'recording' state, a live waveform and spectrogram will update based on the microphone's input. The component will acquire the microphone device based on the chosen input device selected on the settings page. When the application is not in a 'recording' state, the waveform and spectrogram will update based on the .wav file for the current recitem. If no .wav file exists, no visualizations will show. The application also utilizes the FileMonitor so if the user ever deletes or adds a .wav file for the recitem, the visualizations will update appropriately.
+
+The libraries used include the base [wavesurfer.js library](https://wavesurfer-js.org/), along with the [spectrogram](https://wavesurfer-js.org/plugins/spectrogram.html) and [microphone](https://wavesurfer-js.org/plugins/microphone.html) plugins.
+
+ The details behind the current design are shown below.
 
 ### Design Plan for Rendering Live Visualizations
 Method Used:
 - waveform.js Microphone Plugin
 
 Related Existing Code:
-- Add in types/ a wavesurfer.microphone.d.ts file
-  - Ensures that the plugin imports correctly (similar to types/wavesurfer.spectrogram.d.ts)
+- Add in `types/` a `wavesurfer.microphone.d.ts` file
+  - Ensures that the plugin imports correctly (similar to `types/wavesurfer.spectrogram.d.ts`)
   - Export a MicrophonePluginParams interface
   - Based on top comment on https://wavesurfer-js.org/doc/file/src/plugin/microphone.js.html
   - Export a MicrophonePlugin class with a static create function that takes in an input of type MicrophonePluginParams
     - Again, based on this source code https://wavesurfer-js.org/doc/file/src/plugin/microphone.js.html
-- In recording-page/recording-visualization.tsx:
-  - Add acquireAudioInputStream to the import statement from ../../utils
+- In `recording-page/recording-visualization.tsx`:
+  - Add acquireAudioInputStream to the import statement from `../../utils`
   - `import { useAudioInputOutputDevices } from '../settings-page/hooks';`
     - This is the subscription to the audio devices, the current input device id is used to acquire the used audio input stream on the microphone plugin
   - `const [, , audioInputDeviceId, , ,] = useAudioInputOutputDevices();`
@@ -319,24 +317,24 @@ Related Existing Code:
   - `MicrophonePlugin.create({}),`
     - Add the microphone plugin to the existing wavesurfer instance’s plugin array
   - In the useEffect on [filePath, prevState, state]
-    - Add audioInputDeviceId to the dependencies to run the useEffect on
+    - Add `audioInputDeviceId` to the dependencies to run the useEffect on
     - Add `waveSurfer.microphone.pause();` in the not recording if before you read from the .wav file to make sure that the live visualizations are stopped and the instance is ready for the static visualizations
     - Add an else if for when the application is in a recording state
-      - If the mic plugin is not active, call the acquireAudioInputStream to get the media stream object to pass into wavesurfer.microphone.gotStream which initializes the mic with the promised media stream
+      - If the mic plugin is not active, call the `acquireAudioInputStream` to get the media stream object to pass into `wavesurfer.microphone.gotStream` which initializes the mic with the promised media stream
       - Else just call `waveSurfer.microphone.play();`
 
 Design Detail:
 - Use the waveform.js microphone plugin to do the live waveform.
-- Most of the edit would be in renderer\components\recording-page\recording-visualization.tsx
+- Most of the edit would be in `renderer\components\recording-page\recording-visualization.tsx`
 
 ### Design Plan for Rendering Static Visualizations
 Method Used:
 - waveform.js
 
 Related Existing Code:
-- In recording-page/recording-visualization.tsx:
+- In `recording-page/recording-visualization.tsx`:
   - Add a FileMonitor item and have it watch when files are added, unlinked, and changed to the project folder
-  - Subscribe to that filemonitor item’s getSubject() function
+  - Subscribe to that filemonitor item’s `getSubject()` function
     - Limit the events to ones that deal with just the current recitem’s wav file
     - On unlink empty the visualizations
     - On add reload the visualizations with the new file
