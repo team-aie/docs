@@ -18,6 +18,7 @@ team.
 |------------|-------------|
 | 2020-10-13 | First draft |
 | 2021-02-16 | Update Audio Visualization Section |
+| 2021-02-22 | Update Animations Section |
 
 # UI design
 
@@ -357,16 +358,12 @@ Reference:
 * https://programmingwithmosh.com/react/localstorage-react/
 
 ## Web Animation
-
-There are a few screen transitions that require animation. This poses particular
-challenges on page routing: without animation, there is one page that is
-displayed at a time; with animation, there are times when the current page and
-the next page need to be displayed at the same time, so the routing logic may
-need a redesign. Currently, there are a limited set of “states” pre-defined, and
-each state corresponds to a page component.
-
-The implementation of such animation is also unknown. It may be worthwhile to
-consider using “react-transition-group” and other libraries to assist with this.
+There are a few screen transitions that require animation. They are summarized as follows:
+1. On the recording set config page, selecting the “show details” button at the bottom of the screen should pull up the recording list preview page from the bottom.
+1. On the recording list preview page, selecting the “hide details” bottom at the top of the screen will pull down the recording set config page
+1. On the recording list preview page, selecting the right arrow will slide in the oto.ini preview page from the left
+1. On the oto.ini preview page, selecting the right arrow will slide in the voice.dvfc preview page from the left
+1. On the voice.dvfc preview page, selecting the right arrow will slide in the oto.ini preview page from the left
 
 ## Global Key Event Handler
 
