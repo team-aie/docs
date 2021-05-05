@@ -367,12 +367,29 @@ There are a few screen transitions that require animation. They are summarized a
 
 ## Global Key Event Handler
 
-On the recording page, the app needs to listen for the keyboard event globally
-in the app. This is currently implemented as a service to register and remove
-callbacks  at `src/renderer/services/key-event-handler-registry` , but this does
-not encourage dividing key event handlers into ones that deal with specific keys
-and event types, rather a giant handler that uses a giant switch statement to
-branch off them. This type of handler will not scale well in the future.
+### Initial Design
+Initially, all the keybinds were stored in maps globally. This did not scale well and did not allow for good separation of responsibility between how different components handle different keystrokes.
+### Current Design
+Remove the global maps and instead use hooks to allow each component to declare and initialize its own key handlers. These handlers will be initialized when the component is mounted and removed when the component is unmounted. When the same keyhandler is used in multiple components, it can be extracted out to a separate file, and imported into the components it is used in so those components can initialize them.
+
+An example of using hooks to navigate key presses can be found here: https://usehooks.com/useKeyPress/
+
+In order to determine which keys are being pressed, the useKeyPress hook from react-use can be used to determine when single keys are being pressed.  For detecting multiple key presses, useKeyboardJS from react-use can be used.
+
+React-use useKeyPress: https://github.com/streamich/react-use/blob/master/docs/useKeyPress.md
+React-use useKeyboardJS:
+https://github.com/streamich/react-use/blob/master/docs/useKeyboardJs.md
+
+Files changed:
+* Key-event-handler-registry was removed
+* The only place any of the key-event-handler-registry methods were called was the hooks.ts file in for the recordingPage. The calls to addGlobalKeyDownHandler, addGlobalKeyUpHandler, etc were replaced with hooks that register the event handlers locally
+
+### Testing
+Use react-testing-library’s fireEvent() method to unit test keypress events - this method simulates firing events on the DOM.
+Sample usage: fireEvent.keyDown(domNode, {key: ‘Enter’, code: ‘Enter’});
+More details: https://testing-library.com/docs/dom-testing-library/api-events/
+
+
 
 ## Audio I/O and Manipulation
 
@@ -380,6 +397,7 @@ Media I/O is currently centralized in `src/renderer/services/media` . It knows
 how to request for microphone permission, record microphone input, connect audio
 graphs, and so on. It is too big to test easily, and also makes testing other
 components more difficult. This needs to be broken down into smaller pieces.
+
 
 ## Audio Visualization
 
