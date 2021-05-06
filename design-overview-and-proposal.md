@@ -358,12 +358,42 @@ Reference:
 * https://programmingwithmosh.com/react/localstorage-react/
 
 ## Web Animation
+### Summary
 There are a few screen transitions that require animation. They are summarized as follows:
 1. On the recording set config page, selecting the “show details” button at the bottom of the screen should pull up the recording list preview page from the bottom.
 1. On the recording list preview page, selecting the “hide details” bottom at the top of the screen will pull down the recording set config page
 1. On the recording list preview page, selecting the right arrow will slide in the oto.ini preview page from the left
 1. On the oto.ini preview page, selecting the right arrow will slide in the voice.dvfc preview page from the left
 1. On the voice.dvfc preview page, selecting the right arrow will slide in the oto.ini preview page from the left
+
+### Tests
+Use these templates to complete manual testing on the animations.
+#### Test 1
+Preconditions:
+* The application is on the ‘Configure Recording Set’ page
+* The ‘delta english’ reclist is selected.
+
+| Step       | Test Steps      | Expected Result  | Actual Result | Status |
+|------------|-----------------|------------------|---------------|--------|
+| 1 | Select ‘show details’. | The ‘Configure Recording Set’ page should slide up and offscreen, and the ‘List Preview’ Page should slide up from the bottom and onscreen. |   |   |
+
+#### Test 2
+Preconditions:
+* The application is on the ‘List Preview’ page
+* The ‘delta english’ reclist is selected.
+
+| Step       | Test Steps      | Expected Result  | Actual Result | Status |
+|------------|-----------------|------------------|---------------|--------|
+| 1 | Select the arrow button on the right. | The ‘Preview Reclist’ page should slide to the right and offscreen, and the ‘oto-ini’ page should slide onscreen from the left. |   |   |
+
+#### Test 3
+Preconditions:
+* The application is on the ‘List Preview’ page
+* The ‘delta english’ reclist is selected.
+
+| Step       | Test Steps      | Expected Result  | Actual Result | Status |
+|------------|-----------------|------------------|---------------|--------|
+| 1 | Select the up arrow button on the top | The ‘Preview Reclist’ page should slide down and offscreen and the ‘Configure Recording Set’ page should slide down and onscreen from the top. |   |   |
 
 ## Global Key Event Handler
 
