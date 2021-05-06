@@ -358,8 +358,14 @@ Reference:
 * https://programmingwithmosh.com/react/localstorage-react/
 
 ## Web Animation
-### Summary
-There are a few screen transitions that require animation. They are summarized as follows:
+### Non Functional Requirements
+All animated page transitions shall occur smoothly, in a single motion, without any pauses or breaks.
+1. All animated page transitions shall occur in under a second
+1. All animated page transitions shall use the react-transitions-group library
+1. All animated page transitions shall occur along the x and y axis: they should either move strictly left/right or up/down
+
+Individual Transitions
+
 1. On the recording set config page, selecting the “show details” button at the bottom of the screen should pull up the recording list preview page from the bottom.
 1. On the recording list preview page, selecting the “hide details” bottom at the top of the screen will pull down the recording set config page
 1. On the recording list preview page, selecting the right arrow will slide in the oto.ini preview page from the left
@@ -504,3 +510,183 @@ Related Existing Code:
 Design Detail:
 
 * Not going to do anything special, the automatic zooming on wavesurfer.js is sufficient to meet client needs
+
+# Architecture
+
+## Initial System Organization
+
+PICTURE
+
+### Category Descriptions
+#### Components
+The functionalities are shared between individual components and full pages. There are common subcomponents that are shared between pages. Pages are mapped out rendering for each page of the application. They consist of codes to render components and lightweight logic related to rendering.
+
+__Contexts__
+
+Contexts are static data sets that are shared by multiple pages across the application.
+
+__Services__
+
+The application has background services that exist across the entire application and stay alive the entire time when the application is running.
+
+__Types__
+
+Types is used to make typescript happy, allowing to import information from different file types.
+
+__Utils__
+
+Utils is stateless functionality not directly related to rendering, often shared across multiple components. It includes decoding buffers with implementation extracted because we are using different libraries and it also has rsjx-utils which are helper methods for rsjx, shared logic.
+
+## Our Architecture
+PICTURE
+
+Our architecture was based on the Rich Client Application model as it was described in the Cervantes Textbook.  This model is described by the textbook as being the best for systems that are run and installed locally (which aie is) and are intended to provide a “high performance, interactive, rich user experience” which ties in well with one of our top quality attributes being usability.  This architecture suits both the technical needs of the system and some of our client’s top quality goals, making it perfect for us to use.
+
+### Layer Descriptions
+__Presentation Layer__
+
+The presentation layer focuses on the parts of the program that are displayed to the user.  It has two main components: the User Interface, and the UI Process Layer.
+
+_User Interface_
+
+The user interface consists of components that are used to render the application.  The files for this are found inside the components folder of the project.
+
+_UI Process Layer_
+
+The UI (User Interface) Process Layer controls of the flow of the application.  It does this through storing and navigating the projects various states.  The UI Process Layer includes processes in the aie-app file and in the folders components and services/i18n
+
+__Business Layer__
+
+The business layer focuses on the actual logic of the system.  It is comprised of three main components: Business Workflow, Business Logic, and Business Entities.
+
+_Business Workflow_
+
+The business workflow manages the business processes of the application, and controls the Business Entities. This primarily includes the code in the file aie-app.
+
+_Business Logic_
+
+Business Logic retrieves and processes data by interacting with the Data Layer.  This includes all the files in the utils folder except for fs-utils.
+
+_Business Entities_
+
+Business Entities within the business domain, similar to objects in object oriented code.  These files can be found in the contexts and types folders.
+
+__Data Layer__
+
+The Data Layer serves as the connection between the Business Layer and the Local Data Sources.  It consists of the Data Access component, which allows for access of data by the Business Logic. It can be found in the files utils/fs-utils and services/media.
+
+__Local Data Sources__
+
+Since our project works with the local filesystem does not use a database, our data sources consist of the local file system and the computer’s I/O devices.
+
+## Activity Diagram
+
+PICTURE
+
+This activity diagram describes the flow of our application through a series of actions that the user can take.
+
+The system starts with the Welcome page. Here, the user has a few options to customize the application: switch the application theme or language. Once the user has made any desired application changes, the user can then choose to start the application or stay on the page to continue customizing.
+
+Now that the application is started, the user can setup and configure the recording project. The first choice is either opening an existing project or creating a new project.
+
+Once the user has the project opened, there are two paths they can take. The user can start configuring the recording set for the project or view the metadata of any of the built-in recording sets.
+
+If the user chooses to go ahead and configure the recording set, they can either use an existing recording set in the project or create a new one. This step must be done for the user to move on to the next steps in the application. If the user chooses the metadata path, the user can look at the metadata until they decide they are done. The application then loops back into the previous choice.
+
+Now that the recording project and set are configured, the user sets up the input/output devices they want to use for the recording step and agrees to the terms and conditions. This leads to the recording page.
+
+The user can now record the recording item which creates a .wav file that they can play back or play the scale of. Once the user is done replaying the item and scale of the recorded item, the flow of activities is done.
+
+## Quality Attribute Scenarios
+
+PICTURE
+
+Usability describes the ease with which a user is able to interact with a system and use it for its intended purpose.  Usability was one of the driving quality attributes behind aie because one of the problems aie is supposed to solve is the difficulty of using Oremo.  As a result, we focused on making sure that the flow from page to page in the application was clear and intuitive to a new user.
+
+PICTURE
+
+Modifiability is the ability to add new features to the aie project to fulfill any future demands of
+the user. The overall architecture needs to be modifiable for future developers, especially because our client has more requested features for the project than we can feasibly implement within the scope of the project. The project follows a layered architecture approach which can be utilized later to easily add support for additional features.
+
+PICTURE
+
+Portability is the ability to easily adapt an application to run on more than the system it was designed to run on. One of the major goals of this project is the ability to take aie and have it run on most machines. When it was initially conceived, aie was designed for MacOS.  However, the application needs to run on multiple operating systems, and therefore it should be easy to add support for  Windows and Linux (the operating systems we currently are implementing support for) as well as for any future operating systems that the client may want to support.
+
+## Technologies Used
+### React
+
+__Typescript__
+
+Typescript is the programming language used for the majority of the system. It is Javascript with increased type functionality added. The application was using this already and the client wanted us to continue to use it.
+
+__SCSS__
+
+SCSS preprocessor is used to allow for CSS stylesheets to have more complex functions such as variables and inheritance. The application was using this already and the client wanted us to continue to use it.
+
+__Bootstrap__
+
+Bootstrap is a useful react framework that we utilize instead of building our own. The application was using this already and the client wanted us to continue to use it.
+
+__RxJS__
+
+RxJS is the library for reactive programming used to make asynchronous code easier to create. The application was using this already and the client wanted us to continue to use it.
+
+__TS/TSX__
+
+TS/TSX are file types for typescript files. The application was using this already and the client wanted us to continue to use it.
+
+### Electron
+
+Electron is the framework for creating an application. Since the client used it to create the application initially and wanted us to continue to use it, we maintained it as the framework for development.
+
+__Webpack__
+
+Webpack is the bundler of source code. The application was using this framework already and the client wanted us to continue to use it.
+
+### External libraries
+
+__WaveSurfer.js__
+
+Wavesurfer is an audio visualizer that displays waveforms and spectrograms using either microphone input or a .wav file. We conducted research into multiple audio visualization libraries and decided that this one was the way to go because the client had already used the library for the base visualizations and it would be easy to expand the existing code to account for new features. We also have more control over the overall look of the produced waveforms and spectrograms than in other libraries.
+
+__Chokidar__
+
+Chokidar is the file system monitor that relies on the Node. js core fs module that can alert users with any changes within the monitored directories. It is an upgraded version to handle the mis-report issue from fs.watch, which is currently the best feasible implementation of the file system monitor we find.
+
+## Detailed Design
+
+### Introduction
+In this document, we will discuss the strategies that we used to generate our system’s design after generating the architecture.  We will additionally provide examples of several of the design patterns that we used in order to demonstrate our process.
+
+### Design Strategy
+
+As we worked on only a small portion of an application, our design was restricted by the parts of the system that had already been written by the project’s prior developer. This meant that we had large parts of our architecture predetermined, and we had to design around these parts.
+Our goal when designing new features was to add in the new features without disrupting the overall design of the application and only messing with large portions of the code when we were refactoring a component to be more reusable.
+
+### Patterns utilized
+
+__Transaction Script Pattern__
+
+PICTURE
+
+Transaction Script organizes business logic by procedures where each procedure handles a single request. This was a pattern that was primarily set up in the system when we began working on it and it works well with typescript’s functional elements. By following this pattern, we are able to ensure that each of our functional components does exactly one task which allows for separation of logic. This also allows us to split the work between team members more easily as each component does one thing and does not depend on much else.
+
+__State Pattern__
+
+PICTURE
+
+Figure 1: aieApp and it’s concrete states
+
+PICTURE
+
+Figure 2: ConfigureRecordingSet index and its concrete states
+
+State Pattern allows the application to alter behavior based on a state. In our case, each of these states indicates a page that should be displayed. All of our pages and components are React functional components. This makes our implementation flexible - changing the details of a page or a component does not require a rework of the entire application or of the surrounding pages. Depending on the state, the context class will determine which type of page should be rendered.  The interface encapsulates the details of what is rendered, how to render it, and what different actions on the page should do.  We use this state pattern in two ways:
+* Our main app flow (figure 1)
+* Substates off of the configure recording set page (figure 2)
+
+__Composition over Inheritance__
+
+PICTURE
+
+Composition over Inheritance is the principle that code should be reused through composition in order to achieve polymorphic behavior. We’ve refactored some of the given code to create reusable components, and it has been an important part of our design going forward. One such example is shown above. We created a reusable image button that is composed of an onClick function, an image source, and a width that is used throughout many pages on the application. While these are always buttons, the behavior of the button changed based on the received variables. From that, we also created a back button that is composed of an ImageButton with a set source and width, but the provided onBack function changes for each instance it is used.
