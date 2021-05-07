@@ -19,7 +19,6 @@ team.
 | 2020-10-13 | First draft |
 | 2021-02-16 | Update Audio Visualization Section |
 | 2021-02-22 | Update Animations Section |
-| 2021-02-22 | Update Project/Application State Saving and Loading Section |
 | 2021-05-06 | Update feature documentation, add in architecture documents and various user documentation |
 
 # UI design
