@@ -19,6 +19,7 @@ team.
 | 2020-10-13 | First draft |
 | 2021-02-16 | Update Audio Visualization Section |
 | 2021-02-22 | Update Animations Section |
+| 2021-05-06 | Update feature documentation, add in architecture documents and various user documentation |
 
 # UI design
 
@@ -511,6 +512,41 @@ Design Detail:
 
 * Not going to do anything special, the automatic zooming on wavesurfer.js is sufficient to meet client needs
 
+### Tests
+Use these templates to complete manual testing on the audio visualizations.
+#### Intergration Test 1
+Preconditions:
+* The application is on the recording page.
+
+| Step       | Test Steps      | Expected Result  | Actual Result | Status |
+|------------|-----------------|------------------|---------------|--------|
+| 1 | Select ‘record’. | Live visualizations should load. |   |   |
+| 2 | Say anything. | Waveform should show peaks when it picks up the user’s voice. |   |   |
+
+#### Intergration Test 2
+Preconditions:
+* The application is on the recording page and in a recording state.
+
+| Step       | Test Steps      | Expected Result  | Actual Result | Status |
+|------------|-----------------|------------------|---------------|--------|
+| 1 | Select ‘record’. | Live visualizations should stop. A popup will appear to say that the recording was written to a file.  |   |   |
+| 2 | Select ‘okay’ on the popup. | The visualizations should update with the new .wav file. |   |   |
+
+#### Acceptance Test
+Description:
+This will test the recording page’s audio visualization component to verify that it works as expected with the new live audio visualization feature. It should not show any waveform or spectrogram at first, then once ‘record’ is selected the live visualizations will start. They will show until ‘record’ is selected again, then the live visualization should stop and the static visualizations will be populated based on the .wav.
+
+Preconditions:
+* The application is on the recording page.
+* The application is on a recording item that does not have an associated .wav file.
+
+
+| Step       | Test Steps      | Expected Result  | Actual Result | Status |
+|------------|-----------------|------------------|---------------|--------|
+| 1 | Select ‘record’. | Live visualizations should load.  |   |   |
+| 2 | Say anything. | Waveform should show peaks when it picks up the user’s voice. |   |   |
+| 3 | Select ‘record’. | Live visualizations should stop. Static visualizations should show the entire recording based on the created .wav file. |   |   |
+
 # Architecture
 
 ## Initial System Organization
@@ -690,3 +726,131 @@ __Composition over Inheritance__
 PICTURE
 
 Composition over Inheritance is the principle that code should be reused through composition in order to achieve polymorphic behavior. We’ve refactored some of the given code to create reusable components, and it has been an important part of our design going forward. One such example is shown above. We created a reusable image button that is composed of an onClick function, an image source, and a width that is used throughout many pages on the application. While these are always buttons, the behavior of the button changed based on the received variables. From that, we also created a back button that is composed of an ImageButton with a set source and width, but the provided onBack function changes for each instance it is used.
+
+# User Guide
+
+## Introduction
+Our system, aie, is an application that allows users to record and save their own vocaloid voicebanks.  This document is intended to walk through how to use aie and describes its primary features.  Included are descriptions of how to set up a new recording project, how to configure a new recording set, how to record an item, how to change input/output devices (ie. speakers and microphones), and how to view the metadata of a reclist.  It also includes descriptions and images of each page in the application along with their associated purposes and uses.
+
+### How-Tos
+#### How to Setup a New Recording Project
+1. Navigate to the 'Open Project' page.
+![Open Project page](assets/how-to-setup-new-rec-project-1.png)
+1. Select the ‘Create’ button. This should open a file explorer dialogue.
+![Open Project page with Create button circled](assets/how-to-setup-new-rec-project-2.png)
+1. Navigate to the folder you want the project to be saved in and type the desired name into the ‘Name’ textbox. Then select ‘Select Folder’.
+![File explorer popup with folder name and select button circled](assets/how-to-setup-new-rec-project-3.png)
+
+#### How to Configure a New Recording Set
+1. Navigate to the 'Configure Recording Set' page.
+![Configure Recording Set page](assets/how-to-configure-new-rec-set-1.png)
+1. Select the Scale.
+![Configure Recording Set page with Scale settings circled](assets/how-to-configure-new-rec-set-2.png)
+1. Enter the folder's name.
+![Configure Recording Set page with folder name circled](assets/how-to-configure-new-rec-set-3.png)
+1. Select the recording list (either built-in or custom).
+
+    Built-in: select an option in the dropdown menu
+![Configure Recording Set page with built in reclists circled](assets/how-to-configure-new-rec-set-4a.png)
+
+    Custom: select a location from the filesystem by selecting the “Custom” button
+![Configure Recording Set page with custom button circled](assets/how-to-configure-new-rec-set-4b.png)
+1. Click Ok to finish the configuration.
+![Configure Recording Set page with ok button circled](assets/how-to-configure-new-rec-set-5.png)
+
+#### How to Record an Item
+1. Open the project that you want to work on.
+![Open project page](assets/how-to-record-an-item-1.png)
+1. Select the recording set you want to work on from the ‘Created’ list. If the list you want to work on does not exist, follow the ‘How to Configure a New Recording Set’ to create it.
+![configure recording set page with the created list circled](assets/how-to-record-an-item-2.png)
+1. Select ‘Start’.
+![configure recording set page with the start button circled](assets/how-to-record-an-item-3.png)
+1. Select the next and/or previous buttons until the name of the item (circled in blue on the screenshot below) you want to record is shown at the top of the page.
+![recording page with relevant buttons circled](assets/how-to-record-an-item-4.png)
+1. When you are ready to start recording, select the recording button.
+![recording page with the recording button circled](assets/how-to-record-an-item-5.png)
+1. Click the recording button again when you have finished recording.
+![recording page with the recording button circled](assets/how-to-record-an-item-6.png)
+1. Select ‘Ok’ on the file written alert.
+![recording page with the file written popup](assets/how-to-record-an-item-7.png)
+Now that you have recorded an item, it has created a .wav file in your project’s folder on your filesystem and it can be played back by selecting the play button on the ‘Recording’ page. The visualizations should have been updated to display the waveform and spectrogram of the entire recording.
+
+#### How to Change Input/Output Devices
+1. Navigate to the ‘Configure Recording Set’ page.
+![configure recording set page](assets/how-to-change-io-devices-1.png)
+1. Select the ‘Settings’ button in the top-right corner.
+![configure recording set page with settings button circled](assets/how-to-change-io-devices-2.png)
+1. Use drop-downs to select desired input and output devices.
+![settings page with i/o dropdowns circled](assets/how-to-change-io-devices-3.png)
+1. Select ‘Ok’.
+![settings page with okay button circled](assets/how-to-change-io-devices-4.png)
+Note: If the desired device is not shown on the dropdown, your computer does not recognize it as an input or output device.
+
+#### How to View Metadata of a Recording List
+1. Navigate to the ‘Configure Recording Set’ page.
+![configure recording set page](assets/how-to-view-metadata-of-rec-list-1.png)
+1. Select a recording list (either via the recording list dropdown or the “custom” button)
+![configure recording set page with recording list circled](assets/how-to-view-metadata-of-rec-list-2.png)
+1. Select the down arrow button at the bottom of the screen.
+![configure recording set page with down arrow circled](assets/how-to-view-metadata-of-rec-list-3.png)
+1. The Reclist.txt file will be displayed. To iterate through the other metadata files, select the arrow button on the left side of the screen.
+![preview page with slide button circled](assets/how-to-view-metadata-of-rec-list-4.png)
+1. Navigate back to the Configure Recording Set page by selecting the up arrow button.
+![preview page with slide button circled](assets/how-to-view-metadata-of-rec-list-5.png)
+
+Potentially Available Metadata Files:
+Reclist.txt: list of all of the recording items
+oto.ini: configuration file that maps the vowels and consonants for recording items, used for UTAU software
+voice.dvcfg: configuration file for use with DeepVocal software
+
+Note: If one of the files listed above does not show up, the file does not exist in the recording set you selected.
+
+### Page Descriptions
+#### Welcome Page
+![welcome page](assets/welcome-page.png)
+Opening page for the application. Gives the user options to change from light/dark mode and to select a locale for the application.  Users start the application from here, which transitions to the Open Project Page.
+
+#### Open Project Page
+![open project page](assets/open-project-page.png)
+Allows the users to select a previously loaded project, open another existing project, or create a new project.
+* Previously loaded projects will be displayed and can be clicked on to select them.
+* Creating a project opens the file explorer so that the user can select a folder - once a folder has been selected the application navigates to the next page.
+* Opening another existing project opens the file explorer so the user can select the project’s folder - once a folder has been selected the application navigates to the next page.
+* The next page is the Configure Recording Set Page
+
+#### Configure Recording Set Page
+![configure recoding set page](assets/configure-recording-set-page.png)
+The project management page allows users to configure recording sets within the project. Users can adjust the setting of the recording set they are going to record before going to the Recording Page.
+* Users can create their own recording list by following the operations below:
+  * Users can set the scale when creating a recording set by selecting from the drop-down next to the scale text.
+  * Users can set the folder name by entering the folder name on the input box next to the folder name text.
+  * Users can select the built-in recording list by selecting from the drop-down menu below the scale options.
+  * Users can select their custom recording list by selecting the custom button.
+  * After the operations above are finished, users can click the OK button to create their own recording set.
+* Users can set the input/output devices by selecting the setting button on the top-right corner of the page.
+* Users can preview the metadata files by selecting the show detail button on the bottom of the page.
+* Users can start recording by selecting the start button on the bottom-right corner of the page.
+
+#### Metadata Pages
+![metadata page](assets/metadata-pages.png)
+Metadata pages allow users to view various metadata files.  The current supported pages are voice.dvcfg files, oto.ini files, and Reclist files.
+* The default page displayed is the Reclist file, since this should always be available.
+* The other two pages can be toggled to when they are available (some projects may not have voice.dvcfg file or an oto.ini.
+
+#### Settings Page
+![settings page](assets/settings-page.png)
+The project setting page allows users to configure setting options within the project.
+* Users can select input device and output device.
+* Users can select the Test Audio button to test the input and output setting.
+* Users can select the Back button or OK button to turn back to Configure Recording Set Page.
+
+#### Recording Page
+![recording page](assets/recording-page.png)
+The project recording page allows users to record voices for recording items.
+* Users can select the microphone button to record voice for each recording item in the recording list. Users can select it again to stop recording.
+* Users can select the Previous icon to switch to the previous recording item.
+* Users can select the Next icon to switch to the next recording item.
+* Users can select the Play button to play the recorded item.
+* Users can select the Scale button to listen to the scale setting.
+* Users can select the Back button to turn back to Configure Recording Set Page.
+
