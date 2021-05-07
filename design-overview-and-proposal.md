@@ -1016,3 +1016,35 @@ Recommended Development Environment: Windows Visual Studio Code
 | Live visualizations did not stop when you clicked the record button.  | Click the record button again, then hit your enter key. |
 | The waveform is showing live feedback during recording, but there is no spectrogram. | The plugins are out of sync due to files being added/deleted during recording. Next time you hit record, it should be back in sync. |
 | Live visualizations are showing movement during recording, but are not picking up your voice (i.e. no spikes in the waveform). | Check to make sure you have the correct audio input device selected on the settings page. Usually, it is trying to pull from the wrong microphone. |
+
+
+# Deployment/Installation Plan
+
+## Deployment Plan
+
+Software releases are not deployed on a set schedule. Releases are made when the development branch is merged into master, which is done at the discretion of the project owner Zhou Zhou.
+
+# Installation Guide
+
+1. Download the appropriate application executable for your operating system.
+
+    The latest release page is located here:
+    https://github.com/team-aie/app/releases/latest
+
+    - Look for the respective file name for your platform:
+      * Windows: aie-setup-x.y.z.exe
+      * macOS: aie-x.y.z.dmg
+      * Linux: aie.AppImage
+
+    Note for installing on Linux:
+
+    Please consider using `AppImageLauncher` to execute the `.AppImage` file. Alternatively, you can use `appimaged` or simply make the file executable and run it (though you will lose some benefits, including seeing the app icon).
+
+2. Run the executable to start the setup process. Follow the steps on the installer.
+
+    You should now have an application called ‘aie’ on your machine that you can use.
+    1. Download the latest release package using the link in step 1. And double click it to install.
+    ![installing](assets/installation-1.png)
+    2. After it is installed, the application will start.
+
+       ![welcome-page](assets/installation-2.png)
