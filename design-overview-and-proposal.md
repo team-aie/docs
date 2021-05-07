@@ -19,6 +19,7 @@ team.
 | 2020-10-13 | First draft |
 | 2021-02-16 | Update Audio Visualization Section |
 | 2021-02-22 | Update Animations Section |
+| 2021-02-23 | Update Project/Application State Saving and Loading |
 | 2021-05-06 | Update feature documentation, add in architecture documents and various user documentation |
 
 # UI design
@@ -698,6 +699,7 @@ Modifiability is the ability to add new features to the aie project to fulfill a
 the user. The overall architecture needs to be modifiable for future developers, especially because our client has more requested features for the project than we can feasibly implement within the scope of the project. The project follows a layered architecture approach which can be utilized later to easily add support for additional features.
 
 ![Portability Quality Attribute](assets\portability-quality-attribute-scenario.png)
+
 Portability is the ability to easily adapt an application to run on more than the system it was designed to run on. One of the major goals of this project is the ability to take aie and have it run on most machines. When it was initially conceived, aie was designed for MacOS.  However, the application needs to run on multiple operating systems, and therefore it should be easy to add support for  Windows and Linux (the operating systems we currently are implementing support for) as well as for any future operating systems that the client may want to support.
 
 ## Technologies Used
@@ -764,9 +766,11 @@ Transaction Script organizes business logic by procedures where each procedure h
 __State Pattern__
 
 ![State Pattern 1](assets\state-pattern-diagram-1.png)
+
 Figure 1: aieApp and it’s concrete states
 
 ![State Pattern 2](assets\state-pattern-diagram-2.png)
+
 Figure 2: ConfigureRecordingSet index and its concrete states
 
 State Pattern allows the application to alter behavior based on a state. In our case, each of these states indicates a page that should be displayed. All of our pages and components are React functional components. This makes our implementation flexible - changing the details of a page or a component does not require a rework of the entire application or of the surrounding pages. Depending on the state, the context class will determine which type of page should be rendered.  The interface encapsulates the details of what is rendered, how to render it, and what different actions on the page should do.  We use this state pattern in two ways:
@@ -977,3 +981,38 @@ The project recording page allows users to record voices for recording items.
 * Users can select the Play button to play the recorded item.
 * Users can select the Scale button to listen to the scale setting.
 * Users can select the Back button to turn back to Configure Recording Set Page.
+
+# Maintenance Plan
+
+## Prioritized List of Features
+
+Currently, there are no features that need to be implemented.
+
+## Plan for Getting and Using Customer Feedback
+
+Customers can submit issues on the GitHub repository in order to provide feedback to the developers. Developers will then take those raised issues and address any problems or suggestions when further developing.
+
+## Plan for Supporting the Customer
+
+Aie app will be downloadable via GitHub.  Customers will be able to download the latest code version from there and will be able to raise issues when they discover problems.  Developers will be able to address customer feedback by responding to the GitHub issues, and this will allow an organized way to connect bug fixes to specific releases.
+
+## Plan for Dealing with Features Long Term
+
+As new features are implemented and released, new releases will occur on Github.  Customers can suggest new features via Github issues.
+
+## Developer Setup Guide
+
+Recommended Development Environment: Windows Visual Studio Code
+
+1. Clone the application to the developer's machine. The application can be found at: https://github.com/team-aie/app
+2. Import the project folder to Visual Studio Code
+3. Run 'npm i' in the terminal
+4. To launch the application, select 'Run' -> 'Run Without Debugging'
+
+## Troubleshooting Table
+
+|Possible Error       | Solution      |
+|------------|-------------|
+| Live visualizations did not stop when you clicked the record button.  | Click the record button again, then hit your enter key. |
+| The waveform is showing live feedback during recording, but there is no spectrogram. | The plugins are out of sync due to files being added/deleted during recording. Next time you hit record, it should be back in sync. |
+| Live visualizations are showing movement during recording, but are not picking up your voice (i.e. no spikes in the waveform). | Check to make sure you have the correct audio input device selected on the settings page. Usually, it is trying to pull from the wrong microphone. |
