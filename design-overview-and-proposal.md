@@ -19,6 +19,7 @@ team.
 | 2020-10-13 | First draft |
 | 2021-02-16 | Update Audio Visualization Section |
 | 2021-02-22 | Update Animations Section |
+| 2021-02-22 | Update Project/Application State Saving and Loading Section |
 | 2021-05-06 | Update feature documentation, add in architecture documents and various user documentation |
 
 # UI design
@@ -328,39 +329,71 @@ Design detail:
 
 Key tasks:
 
-* Choose to resume previous progress while users open an in-progress project
-* Project file should record the state of recording
-* The open-project-page should have a button named 'Resume' which could allow the user to resume back to the previous working status.
+* Choose to resume previous progress while users open an in-progress project if the application detects an abnormal shutdown
+* Localstorage should record the state of recording when it detects an abnormal shutdown
+* The welcome page should pop out an alert and ask "We detected an abnormal shutdown. Do you want to continue from where you left off?" to users.
+* The alert should have two options: "OK" and "Cancel". "OK" will direct the user to the recording page with the previous recorded item. "Cancel" will clear the state of recording in the localstorage and stay in the welcome page.
 
 Method used:
 
 * Localstorage
+* `Unload` actionlistener for window
 
 Related existing code:
 
-* `src/renderer/components/recording-page/index.tsx`
-* `src/renderer/components/open-project-page/index.tsx`
+* `src/renderer/components/welcome-page/index.tsx`
+* `src/renderer/utils/localstorage-clear.tsx`
+* `src/renderer/utils/localstorage-clear.test.tsx`
 
 Information stored in the localstorage
 
-* recording-page/Index.tsx - The index of the recording item that is recorded before program is closed
-* open-project-page/index.tsx - The path of the project that user is currently worked on
+* Constant `RETAINED_LOCALSTORAGE_KEYS` is created in `localstorage-clear.tsx`. It includes 8 variables that are used for storing state of recording.
+  + `AieApp$keyOctave`
+  + `AieApp$projectFolder`
+  + `AieApp$recordingProject`
+  + `AieApp$recordingSet`
+  + `AieApp$recordingList`
+  + `ConfigureRecordingSetPage$recordingSets`
+  + `ConfigureRecordingSetPage$projectFile`
+  + `RecordingPage$index`
 
 Design detail:
 
-* Store the path of the open project as user switch from open-project-page to configure-recording-set-page
-* Store the chosen recording set as user switch from configure-recording-set-page to recording-page
-* Store the index of the current recording items as user records and replace it with the next one as the user records the new one.
+* Clear localstorage in the `render/index.tsx` file
+  + Call the custom hook `resetLocalStorage`.
+  + `resetLocalStorage` stores the state of recording into constant `reservedStateValues`.
+  + Localstorage is cleared after the state of recording is stored.
+  + Retrieve stored values from `reservedStateValues` and put them back into localStorage after it is cleared.
+* Detection in `utils/localstorage-clear.tsx`
+  + Create a custom hook named `useResumeCheck`.
+  + Window adds a listener to detect abnormal shutdown: `window.addEventListener('unload', function)`. This function will only trigger when the laptop is shutdown abnormally. In the function, it will clear the localStorage if it is triggered. Therefore, if the laptop is closed normally, this function will trigger and state of recording will be cleared.
+  + Detect whether the state of recording is stored in localstorage by retrieving values of `RETAINED_LOCALSTORAGE_KEYS` and check whether it contains `null`.
+  + Use a confirm method to pop out an alert and provide "OK" and "Cancel" options for users.
+* Call the custom hook in `components/welcome-page/welcome-page.tsx`
+  + `useResumeCheck` is called and passes `onResumeStatus` as the parameter used to direct page to recording page.
+
+Testing:
+
+* Use react-testing-library's `renderHook()` method to render the custom hook without rendering the component page.
+* Use `jest.spyOn` to mock the mockImplementation of "confirm"
+* Set "confirm" as `true` to test whether goToRecordingPage will be called if user clicks confirm.
+* Set 'confirm' as `false` to test whether the localstorage will be cleared.
 
 Reference:
 
-* https://medium.com/cameron-nokes/how-to-store-user-data-in-electron-3ba6bf66bc1e
-* https://www.geeksforgeeks.org/persisting-data-in-electronjs/
 * https://programmingwithmosh.com/react/localstorage-react/
+* https://www.npmjs.com/package/react-confirm
+* https://www.electronjs.org/docs/tutorial/quick-start
+* https://reactjs.org/docs/hooks-custom.html
+* https://react-hooks-testing-library.com/usage/basic-hooks
+* https://jestjs.io/docs/jest-object
 
 ## Web Animation
+
 ### Non Functional Requirements
+
 All animated page transitions shall occur smoothly, in a single motion, without any pauses or breaks.
+
 1. All animated page transitions shall occur in under a second
 1. All animated page transitions shall use the react-transitions-group library
 1. All animated page transitions shall occur along the x and y axis: they should either move strictly left/right or up/down
@@ -374,9 +407,13 @@ Individual Transitions
 1. On the voice.dvfc preview page, selecting the right arrow will slide in the oto.ini preview page from the left
 
 ### Tests
+
 Use these templates to complete manual testing on the animations.
+
 #### Test 1
+
 Preconditions:
+
 * The application is on the ‘Configure Recording Set’ page
 * The ‘delta english’ reclist is selected.
 
@@ -385,7 +422,9 @@ Preconditions:
 | 1 | Select ‘show details’. | The ‘Configure Recording Set’ page should slide up and offscreen, and the ‘List Preview’ Page should slide up from the bottom and onscreen. |   |   |
 
 #### Test 2
+
 Preconditions:
+
 * The application is on the ‘List Preview’ page
 * The ‘delta english’ reclist is selected.
 
@@ -394,7 +433,9 @@ Preconditions:
 | 1 | Select the arrow button on the right. | The ‘Preview Reclist’ page should slide to the right and offscreen, and the ‘oto-ini’ page should slide onscreen from the left. |   |   |
 
 #### Test 3
+
 Preconditions:
+
 * The application is on the ‘List Preview’ page
 * The ‘delta english’ reclist is selected.
 
@@ -405,8 +446,11 @@ Preconditions:
 ## Global Key Event Handler
 
 ### Initial Design
+
 Initially, all the keybinds were stored in maps globally. This did not scale well and did not allow for good separation of responsibility between how different components handle different keystrokes.
+
 ### Current Design
+
 Remove the global maps and instead use hooks to allow each component to declare and initialize its own key handlers. These handlers will be initialized when the component is mounted and removed when the component is unmounted. When the same keyhandler is used in multiple components, it can be extracted out to a separate file, and imported into the components it is used in so those components can initialize them.
 
 An example of using hooks to navigate key presses can be found here: https://usehooks.com/useKeyPress/
@@ -418,15 +462,15 @@ React-use useKeyboardJS:
 https://github.com/streamich/react-use/blob/master/docs/useKeyboardJs.md
 
 Files changed:
+
 * Key-event-handler-registry was removed
 * The only place any of the key-event-handler-registry methods were called was the hooks.ts file in for the recordingPage. The calls to addGlobalKeyDownHandler, addGlobalKeyUpHandler, etc were replaced with hooks that register the event handlers locally
 
 ### Testing
+
 Use react-testing-library’s fireEvent() method to unit test keypress events - this method simulates firing events on the DOM.
 Sample usage: fireEvent.keyDown(domNode, {key: ‘Enter’, code: ‘Enter’});
 More details: https://testing-library.com/docs/dom-testing-library/api-events/
-
-
 
 ## Audio I/O and Manipulation
 
@@ -434,7 +478,6 @@ Media I/O is currently centralized in `src/renderer/services/media` . It knows
 how to request for microphone permission, record microphone input, connect audio
 graphs, and so on. It is too big to test easily, and also makes testing other
 components more difficult. This needs to be broken down into smaller pieces.
-
 
 ## Audio Visualization
 
@@ -460,11 +503,11 @@ Related Existing Code:
     - Again, based on this source code https://wavesurfer-js.org/doc/file/src/plugin/microphone.js.html
 * In `recording-page/recording-visualization.tsx`:
   + Add acquireAudioInputStream to the import statement from `../../utils`
-  + `import { useAudioInputOutputDevices } from '../settings-page/hooks';`
+  + `import { useAudioInputOutputDevices } from '../settings-page/hooks'; `
     - This is the subscription to the audio devices, the current input device id is used to acquire the used audio input stream on the microphone plugin
-  + `const [, , audioInputDeviceId, , ,] = useAudioInputOutputDevices();`
+  + `const [, , audioInputDeviceId, , , ] = useAudioInputOutputDevices(); `
     - Get the audio input device id, we don’t care about the other variables that useAudioInputOutputDevices returns
-  + `MicrophonePlugin.create({}),`
+  + `MicrophonePlugin.create({}), `
     - Add the microphone plugin to the existing wavesurfer instance’s plugin array
   + In the useEffect on [filePath, prevState, state]
     - Add `audioInputDeviceId` to the dependencies to run the useEffect on
@@ -513,9 +556,13 @@ Design Detail:
 * Not going to do anything special, the automatic zooming on wavesurfer.js is sufficient to meet client needs
 
 ### Tests
+
 Use these templates to complete manual testing on the audio visualizations.
+
 #### Intergration Test 1
+
 Preconditions:
+
 * The application is on the recording page.
 
 | Step       | Test Steps      | Expected Result  | Actual Result | Status |
@@ -524,7 +571,9 @@ Preconditions:
 | 2 | Say anything. | Waveform should show peaks when it picks up the user’s voice. |   |   |
 
 #### Intergration Test 2
+
 Preconditions:
+
 * The application is on the recording page and in a recording state.
 
 | Step       | Test Steps      | Expected Result  | Actual Result | Status |
@@ -533,13 +582,14 @@ Preconditions:
 | 2 | Select ‘okay’ on the popup. | The visualizations should update with the new .wav file. |   |   |
 
 #### Acceptance Test
+
 Description:
 This will test the recording page’s audio visualization component to verify that it works as expected with the new live audio visualization feature. It should not show any waveform or spectrogram at first, then once ‘record’ is selected the live visualizations will start. They will show until ‘record’ is selected again, then the live visualization should stop and the static visualizations will be populated based on the .wav.
 
 Preconditions:
+
 * The application is on the recording page.
 * The application is on a recording item that does not have an associated .wav file.
-
 
 | Step       | Test Steps      | Expected Result  | Actual Result | Status |
 |------------|-----------------|------------------|---------------|--------|
@@ -554,7 +604,9 @@ Preconditions:
 PICTURE
 
 ### Category Descriptions
+
 #### Components
+
 The functionalities are shared between individual components and full pages. There are common subcomponents that are shared between pages. Pages are mapped out rendering for each page of the application. They consist of codes to render components and lightweight logic related to rendering.
 
 __Contexts__
@@ -574,11 +626,13 @@ __Utils__
 Utils is stateless functionality not directly related to rendering, often shared across multiple components. It includes decoding buffers with implementation extracted because we are using different libraries and it also has rsjx-utils which are helper methods for rsjx, shared logic.
 
 ## Our Architecture
+
 PICTURE
 
 Our architecture was based on the Rich Client Application model as it was described in the Cervantes Textbook.  This model is described by the textbook as being the best for systems that are run and installed locally (which aie is) and are intended to provide a “high performance, interactive, rich user experience” which ties in well with one of our top quality attributes being usability.  This architecture suits both the technical needs of the system and some of our client’s top quality goals, making it perfect for us to use.
 
 ### Layer Descriptions
+
 __Presentation Layer__
 
 The presentation layer focuses on the parts of the program that are displayed to the user.  It has two main components: the User Interface, and the UI Process Layer.
@@ -649,6 +703,7 @@ PICTURE
 Portability is the ability to easily adapt an application to run on more than the system it was designed to run on. One of the major goals of this project is the ability to take aie and have it run on most machines. When it was initially conceived, aie was designed for MacOS.  However, the application needs to run on multiple operating systems, and therefore it should be easy to add support for  Windows and Linux (the operating systems we currently are implementing support for) as well as for any future operating systems that the client may want to support.
 
 ## Technologies Used
+
 ### React
 
 __Typescript__
@@ -692,6 +747,7 @@ Chokidar is the file system monitor that relies on the Node. js core fs module t
 ## Detailed Design
 
 ### Introduction
+
 In this document, we will discuss the strategies that we used to generate our system’s design after generating the architecture.  We will additionally provide examples of several of the design patterns that we used in order to demonstrate our process.
 
 ### Design Strategy
@@ -718,6 +774,7 @@ PICTURE
 Figure 2: ConfigureRecordingSet index and its concrete states
 
 State Pattern allows the application to alter behavior based on a state. In our case, each of these states indicates a page that should be displayed. All of our pages and components are React functional components. This makes our implementation flexible - changing the details of a page or a component does not require a rework of the entire application or of the surrounding pages. Depending on the state, the context class will determine which type of page should be rendered.  The interface encapsulates the details of what is rendered, how to render it, and what different actions on the page should do.  We use this state pattern in two ways:
+
 * Our main app flow (figure 1)
 * Substates off of the configure recording set page (figure 2)
 
@@ -730,72 +787,125 @@ Composition over Inheritance is the principle that code should be reused through
 # User Guide
 
 ## Introduction
+
 Our system, aie, is an application that allows users to record and save their own vocaloid voicebanks.  This document is intended to walk through how to use aie and describes its primary features.  Included are descriptions of how to set up a new recording project, how to configure a new recording set, how to record an item, how to change input/output devices (ie. speakers and microphones), and how to view the metadata of a reclist.  It also includes descriptions and images of each page in the application along with their associated purposes and uses.
 
 ### How-Tos
+
 #### How to Setup a New Recording Project
+
 1. Navigate to the 'Open Project' page.
+
 ![Open Project page](assets/how-to-setup-new-rec-project-1.png)
+
 1. Select the ‘Create’ button. This should open a file explorer dialogue.
+
 ![Open Project page with Create button circled](assets/how-to-setup-new-rec-project-2.png)
+
 1. Navigate to the folder you want the project to be saved in and type the desired name into the ‘Name’ textbox. Then select ‘Select Folder’.
+
 ![File explorer popup with folder name and select button circled](assets/how-to-setup-new-rec-project-3.png)
 
 #### How to Configure a New Recording Set
+
 1. Navigate to the 'Configure Recording Set' page.
+
 ![Configure Recording Set page](assets/how-to-configure-new-rec-set-1.png)
+
 1. Select the Scale.
+
 ![Configure Recording Set page with Scale settings circled](assets/how-to-configure-new-rec-set-2.png)
+
 1. Enter the folder's name.
+
 ![Configure Recording Set page with folder name circled](assets/how-to-configure-new-rec-set-3.png)
+
 1. Select the recording list (either built-in or custom).
 
     Built-in: select an option in the dropdown menu
+
 ![Configure Recording Set page with built in reclists circled](assets/how-to-configure-new-rec-set-4a.png)
 
     Custom: select a location from the filesystem by selecting the “Custom” button
+
 ![Configure Recording Set page with custom button circled](assets/how-to-configure-new-rec-set-4b.png)
+
 1. Click Ok to finish the configuration.
+
 ![Configure Recording Set page with ok button circled](assets/how-to-configure-new-rec-set-5.png)
 
 #### How to Record an Item
+
 1. Open the project that you want to work on.
+
 ![Open project page](assets/how-to-record-an-item-1.png)
+
 1. Select the recording set you want to work on from the ‘Created’ list. If the list you want to work on does not exist, follow the ‘How to Configure a New Recording Set’ to create it.
+
 ![configure recording set page with the created list circled](assets/how-to-record-an-item-2.png)
+
 1. Select ‘Start’.
+
 ![configure recording set page with the start button circled](assets/how-to-record-an-item-3.png)
+
 1. Select the next and/or previous buttons until the name of the item (circled in blue on the screenshot below) you want to record is shown at the top of the page.
+
 ![recording page with relevant buttons circled](assets/how-to-record-an-item-4.png)
+
 1. When you are ready to start recording, select the recording button.
+
 ![recording page with the recording button circled](assets/how-to-record-an-item-5.png)
+
 1. Click the recording button again when you have finished recording.
+
 ![recording page with the recording button circled](assets/how-to-record-an-item-6.png)
+
 1. Select ‘Ok’ on the file written alert.
+
 ![recording page with the file written popup](assets/how-to-record-an-item-7.png)
+
 Now that you have recorded an item, it has created a .wav file in your project’s folder on your filesystem and it can be played back by selecting the play button on the ‘Recording’ page. The visualizations should have been updated to display the waveform and spectrogram of the entire recording.
 
 #### How to Change Input/Output Devices
+
 1. Navigate to the ‘Configure Recording Set’ page.
+
 ![configure recording set page](assets/how-to-change-io-devices-1.png)
+
 1. Select the ‘Settings’ button in the top-right corner.
+
 ![configure recording set page with settings button circled](assets/how-to-change-io-devices-2.png)
+
 1. Use drop-downs to select desired input and output devices.
+
 ![settings page with i/o dropdowns circled](assets/how-to-change-io-devices-3.png)
+
 1. Select ‘Ok’.
+
 ![settings page with okay button circled](assets/how-to-change-io-devices-4.png)
+
 Note: If the desired device is not shown on the dropdown, your computer does not recognize it as an input or output device.
 
 #### How to View Metadata of a Recording List
+
 1. Navigate to the ‘Configure Recording Set’ page.
+
 ![configure recording set page](assets/how-to-view-metadata-of-rec-list-1.png)
+
 1. Select a recording list (either via the recording list dropdown or the “custom” button)
+
 ![configure recording set page with recording list circled](assets/how-to-view-metadata-of-rec-list-2.png)
+
 1. Select the down arrow button at the bottom of the screen.
+
 ![configure recording set page with down arrow circled](assets/how-to-view-metadata-of-rec-list-3.png)
+
 1. The Reclist.txt file will be displayed. To iterate through the other metadata files, select the arrow button on the left side of the screen.
+
 ![preview page with slide button circled](assets/how-to-view-metadata-of-rec-list-4.png)
+
 1. Navigate back to the Configure Recording Set page by selecting the up arrow button.
+
 ![preview page with slide button circled](assets/how-to-view-metadata-of-rec-list-5.png)
 
 Potentially Available Metadata Files:
@@ -806,51 +916,68 @@ voice.dvcfg: configuration file for use with DeepVocal software
 Note: If one of the files listed above does not show up, the file does not exist in the recording set you selected.
 
 ### Page Descriptions
+
 #### Welcome Page
+
 ![welcome page](assets/welcome-page.png)
+
 Opening page for the application. Gives the user options to change from light/dark mode and to select a locale for the application.  Users start the application from here, which transitions to the Open Project Page.
 
 #### Open Project Page
+
 ![open project page](assets/open-project-page.png)
+
 Allows the users to select a previously loaded project, open another existing project, or create a new project.
+
 * Previously loaded projects will be displayed and can be clicked on to select them.
 * Creating a project opens the file explorer so that the user can select a folder - once a folder has been selected the application navigates to the next page.
 * Opening another existing project opens the file explorer so the user can select the project’s folder - once a folder has been selected the application navigates to the next page.
 * The next page is the Configure Recording Set Page
 
 #### Configure Recording Set Page
+
 ![configure recoding set page](assets/configure-recording-set-page.png)
+
 The project management page allows users to configure recording sets within the project. Users can adjust the setting of the recording set they are going to record before going to the Recording Page.
+
 * Users can create their own recording list by following the operations below:
-  * Users can set the scale when creating a recording set by selecting from the drop-down next to the scale text.
-  * Users can set the folder name by entering the folder name on the input box next to the folder name text.
-  * Users can select the built-in recording list by selecting from the drop-down menu below the scale options.
-  * Users can select their custom recording list by selecting the custom button.
-  * After the operations above are finished, users can click the OK button to create their own recording set.
+  + Users can set the scale when creating a recording set by selecting from the drop-down next to the scale text.
+  + Users can set the folder name by entering the folder name on the input box next to the folder name text.
+  + Users can select the built-in recording list by selecting from the drop-down menu below the scale options.
+  + Users can select their custom recording list by selecting the custom button.
+  + After the operations above are finished, users can click the OK button to create their own recording set.
 * Users can set the input/output devices by selecting the setting button on the top-right corner of the page.
 * Users can preview the metadata files by selecting the show detail button on the bottom of the page.
 * Users can start recording by selecting the start button on the bottom-right corner of the page.
 
 #### Metadata Pages
+
 ![metadata page](assets/metadata-pages.png)
+
 Metadata pages allow users to view various metadata files.  The current supported pages are voice.dvcfg files, oto.ini files, and Reclist files.
+
 * The default page displayed is the Reclist file, since this should always be available.
 * The other two pages can be toggled to when they are available (some projects may not have voice.dvcfg file or an oto.ini.
 
 #### Settings Page
+
 ![settings page](assets/settings-page.png)
+
 The project setting page allows users to configure setting options within the project.
+
 * Users can select input device and output device.
 * Users can select the Test Audio button to test the input and output setting.
 * Users can select the Back button or OK button to turn back to Configure Recording Set Page.
 
 #### Recording Page
+
 ![recording page](assets/recording-page.png)
+
 The project recording page allows users to record voices for recording items.
+
 * Users can select the microphone button to record voice for each recording item in the recording list. Users can select it again to stop recording.
 * Users can select the Previous icon to switch to the previous recording item.
 * Users can select the Next icon to switch to the next recording item.
 * Users can select the Play button to play the recorded item.
 * Users can select the Scale button to listen to the scale setting.
 * Users can select the Back button to turn back to Configure Recording Set Page.
-
