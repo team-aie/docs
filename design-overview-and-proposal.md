@@ -601,7 +601,7 @@ Preconditions:
 
 ## Initial System Organization
 
-![Initial System](assets\intial-system-organization.png)
+![Initial System](assets/intial-system-organization.png)
 
 ### Category Descriptions
 
@@ -627,7 +627,7 @@ Utils is stateless functionality not directly related to rendering, often shared
 
 ## Our Architecture
 
-![Architecture](assets\layer-diagram.png)
+![Architecture](assets/layer-diagram.png)
 
 Our architecture was based on the Rich Client Application model as it was described in the Cervantes Textbook.  This model is described by the textbook as being the best for systems that are run and installed locally (which aie is) and are intended to provide a “high performance, interactive, rich user experience” which ties in well with one of our top quality attributes being usability.  This architecture suits both the technical needs of the system and some of our client’s top quality goals, making it perfect for us to use.
 
@@ -671,7 +671,7 @@ Since our project works with the local filesystem does not use a database, our d
 
 ## Activity Diagram
 
-![Activity Diagram](assets\activity-diagram.png)
+![Activity Diagram](assets/activity-diagram.png)
 
 This activity diagram describes the flow of our application through a series of actions that the user can take.
 
@@ -689,16 +689,16 @@ The user can now record the recording item which creates a .wav file that they c
 
 ## Quality Attribute Scenarios
 
-![Usability Quality Attribute](assets\usability-quality-attribute-scenario.png)
+![Usability Quality Attribute](assets/usability-quality-attribute-scenario.png)
 
 Usability describes the ease with which a user is able to interact with a system and use it for its intended purpose.  Usability was one of the driving quality attributes behind aie because one of the problems aie is supposed to solve is the difficulty of using Oremo.  As a result, we focused on making sure that the flow from page to page in the application was clear and intuitive to a new user.
 
-![Modifiability Quality Attribute](assets\Modifiability-quality-attribute-scenario.png)
+![Modifiability Quality Attribute](assets/Modifiability-quality-attribute-scenario.png)
 
 Modifiability is the ability to add new features to the aie project to fulfill any future demands of
 the user. The overall architecture needs to be modifiable for future developers, especially because our client has more requested features for the project than we can feasibly implement within the scope of the project. The project follows a layered architecture approach which can be utilized later to easily add support for additional features.
 
-![Portability Quality Attribute](assets\portability-quality-attribute-scenario.png)
+![Portability Quality Attribute](assets/portability-quality-attribute-scenario.png)
 
 Portability is the ability to easily adapt an application to run on more than the system it was designed to run on. One of the major goals of this project is the ability to take aie and have it run on most machines. When it was initially conceived, aie was designed for MacOS.  However, the application needs to run on multiple operating systems, and therefore it should be easy to add support for  Windows and Linux (the operating systems we currently are implementing support for) as well as for any future operating systems that the client may want to support.
 
@@ -759,17 +759,17 @@ Our goal when designing new features was to add in the new features without disr
 
 __Transaction Script Pattern__
 
-![Transaction Script Pattern](assets\transaction-script-pattern-diagram.png)
+![Transaction Script Pattern](assets/transaction-script-pattern-diagram.png)
 
 Transaction Script organizes business logic by procedures where each procedure handles a single request. This was a pattern that was primarily set up in the system when we began working on it and it works well with typescript’s functional elements. By following this pattern, we are able to ensure that each of our functional components does exactly one task which allows for separation of logic. This also allows us to split the work between team members more easily as each component does one thing and does not depend on much else.
 
 __State Pattern__
 
-![State Pattern 1](assets\state-pattern-diagram-1.png)
+![State Pattern 1](assets/state-pattern-diagram-1.png)
 
 Figure 1: aieApp and it’s concrete states
 
-![State Pattern 2](assets\state-pattern-diagram-2.png)
+![State Pattern 2](assets/state-pattern-diagram-2.png)
 
 Figure 2: ConfigureRecordingSet index and its concrete states
 
@@ -780,7 +780,7 @@ State Pattern allows the application to alter behavior based on a state. In our 
 
 __Composition over Inheritance__
 
-![Composition over Inheritance](assets\composition-over-inheritence-diagram.png)
+![Composition over Inheritance](assets/composition-over-inheritence-diagram.png)
 
 Composition over Inheritance is the principle that code should be reused through composition in order to achieve polymorphic behavior. We’ve refactored some of the given code to create reusable components, and it has been an important part of our design going forward. One such example is shown above. We created a reusable image button that is composed of an onClick function, an image source, and a width that is used throughout many pages on the application. While these are always buttons, the behavior of the button changed based on the received variables. From that, we also created a back button that is composed of an ImageButton with a set source and width, but the provided onBack function changes for each instance it is used.
 
