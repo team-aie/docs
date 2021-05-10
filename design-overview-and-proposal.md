@@ -21,6 +21,7 @@ team.
 | 2021-02-22 | Update Animations Section |
 | 2021-02-23 | Update Project/Application State Saving and Loading |
 | 2021-05-06 | Update feature documentation, add in architecture documents and various user documentation |
+| 2021-05-10 | Small formatting fixes |
 
 # UI design
 
@@ -597,7 +598,7 @@ Preconditions:
 | 2 | Say anything. | Waveform should show peaks when it picks up the user’s voice. |   |   |
 | 3 | Select ‘record’. | Live visualizations should stop. Static visualizations should show the entire recording based on the created .wav file. |   |   |
 
-# Architecture
+# Software Architecture and Design
 
 ## Initial System Organization
 
@@ -625,7 +626,7 @@ __Utils__
 
 Utils is stateless functionality not directly related to rendering, often shared across multiple components. It includes decoding buffers with implementation extracted because we are using different libraries and it also has rsjx-utils which are helper methods for rsjx, shared logic.
 
-## Our Architecture
+## Reference Architecture
 
 ![Architecture](assets/layer-diagram.png)
 
@@ -982,7 +983,7 @@ The project recording page allows users to record voices for recording items.
 * Users can select the Scale button to listen to the scale setting.
 * Users can select the Back button to turn back to Configure Recording Set Page.
 
-# Maintenance Plan
+# Development/Maintenance Guide
 
 ## Prioritized List of Features
 
